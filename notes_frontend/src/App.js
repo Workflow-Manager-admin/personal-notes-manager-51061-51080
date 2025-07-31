@@ -48,14 +48,28 @@ function App() {
   // PUBLIC_INTERFACE
   async function handleAddNote(e) {
     e.preventDefault();
-    if (!newTitle.trim()) return;
+    // Supabase schema: 'user_id', 'title', and 'content' are required and NOT NULL.
+    // TODO: Replace the 'user_id' logic below with real auth/user id when implementing authentication.
+    const DUMMY_USER_ID = 1; // Use a constant for now, but this must match a valid user in DB if foreign key exists.
+    if (!newTitle.trim()) {
+      alert("Title is required.");
+      return;
+    }
+    if (!newContent.trim()) {
+      alert("Content is required.");
+      return;
+    }
     const { data, error } = await supabase
       .from('notes')
-      .insert([{ title: newTitle, content: newContent }])
+      .insert([{ 
+        user_id: DUMMY_USER_ID, 
+        title: newTitle, 
+        content: newContent 
+      }])
       .select();
     if (error) {
-      alert("Failed to add note.");
-    } else {
+      alert("Failed to add note. " + (error.message || ""));
+    } else if (data && data.length > 0) {
       setNotes([data[0], ...notes]);
       setSelectedId(data[0].id);
       setIsEditing(false);
