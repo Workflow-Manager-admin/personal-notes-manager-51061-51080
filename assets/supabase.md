@@ -8,17 +8,40 @@ Configure the Supabase client in React using:
 
 ## Usage
 
-The frontend expects a table called `notes` in Supabase with the following schema:
+The frontend expects a table called `notes` in Supabase with the following schema.
+**IMPORTANT: Verified actual table schema differs slightly from the original doc.**
 
-| Field      | Type     | Notes                     |
-|------------|----------|---------------------------|
-| id         | bigint   | Primary Key, auto-incr    |
-| title      | text     | Title of note (nullable)  |
-| content    | text     | Body/content of note      |
-| created_at | timestamptz | Defaults to now()      |
-| updated_at | timestamptz | Defaults to now(), auto-updates on update |
+### Documented/Intended Schema
+| Field      | Type             | Notes                                      |
+|------------|------------------|--------------------------------------------|
+| id         | bigint           | Primary Key, auto-incr                     |
+| title      | text             | Title of note (**nullable** in doc)        |
+| content    | text             | Body/content of note                       |
+| created_at | timestamptz      | Defaults to now()                          |
+| updated_at | timestamptz      | Defaults to now(), auto-updates on update  |
+
+### ACTUAL Supabase Table Schema
+| Field      | Type                      | Notes                                   |
+|------------|---------------------------|-----------------------------------------|
+| id         | bigint                    | Primary Key, NOT NULL                   |
+| user_id    | bigint                    | NOT NULL                                |
+| title      | text                      | NOT NULL (nullable=FALSE in DB)         |
+| content    | text                      | NOT NULL                                |
+| created_at | timestamp without tz      | Defaults to now(), nullable=TRUE        |
+| updated_at | timestamp without tz      | Defaults to now(), nullable=TRUE        |
+| tags       | ARRAY                     | nullable=TRUE                           |
+
+**Current backend includes these extra/restricted fields:**
+- `user_id` (bigint, **required**): Not present in the original doc.
+- `title` is **NOT NULL** in Supabase, but doc described as nullable.
+- `tags` (ARRAY): not mentioned in the original doc.
+
+> If you must align schema precisely, coordinate with backend engineering.  
+> The current frontend only uses fields: `id`, `title`, `content`, `created_at`, `updated_at`.
 
 The app provides CRUD (create, read, update, delete) operations on the `notes` table.
+
+**Schema checked and verified as of: _[LLM Automation]_**
 
 ## React Integration
 
